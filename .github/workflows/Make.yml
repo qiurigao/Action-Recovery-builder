@@ -102,8 +102,8 @@ jobs:
     
       - name: Repack Output File
         run: |
-          
-          mkdir -p upload
+          cd ${{ steps.pwd.outputs.pwd }}
+          mkdir  upload
           tar zcvf out.tar.gz out
           if [[ $(du -sb out.tar.gz | awk '{print $1}') -gt 2097152000 ]];then
               echo -e "split packaging..."
