@@ -100,8 +100,8 @@ jobs:
         make delta_generator -j$(nproc --all)        
         
     
-      - name: Repack Output File
-        run: |
+    - name: Repack Output File
+      run: |
           cd ${{ steps.pwd.outputs.pwd }}
           mkdir  upload
           tar zcvf out.tar.gz out
@@ -113,11 +113,10 @@ jobs:
           fi
           ls "upload"
 
-      - name: Upload SGSI to GH-Release
-        uses: ncipollo/release-action@v1.8.6
-        with:
+    - name: Upload SGSI to GH-Release
+      uses: ncipollo/release-action@v1.8.6
+      with:
           artifacts: upload/*
           name: tar
           tag: file
-          
           token: ${{ secrets.GITHUB_TOKEN }}
