@@ -98,13 +98,26 @@ jobs:
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng 
         make clean
         make delta_generator -j$(nproc --all)        
-        tar zcvf out.tar.gz out
-    - name: Upload to Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: out.tar.gz
-        name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
-        tag_name: ${{ github.run_id }}
-        body: Recovery for ${{ github.event.inputs.DEVICE_NAME }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    
+      - name: Repack Output File
+        run: |
+          
+          mkdir -p upload
+          tar zcvf out.tar.gz out
+          if [[ $(du -sb out.tar.gz | awk '{print $1}') -gt 2097152000 ]];then
+              echo -e "split packaging..."
+              tar -cpzf - out.tar.gz | split -d -b 1024m - "upload/out.tar.gz"
+          else
+              mv out.tar.gz upload/
+          fi
+          ls "upload"
+
+      - name: Upload SGSI to GH-Release
+        uses: ncipollo/release-action@v1.8.6
+        with:
+          artifacts: upload/*
+          name: tar
+          tag: file
+          
+          token: ${{ secrets.GITHUB_TOKEN }}
