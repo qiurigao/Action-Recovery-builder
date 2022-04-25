@@ -113,10 +113,12 @@ jobs:
           fi
           ls "upload"
 
-    - name: Upload SGSI to GH-Release
-      uses: ncipollo/release-action@v1.8.6
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
       with:
-          artifacts: workspace/upload/*
-          name: tar
-          tag: file
-          token: ${{ secrets.GITHUB_TOKEN }}
+        files: workspace/out.tar.gz
+        name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
+        body: Recovery for ${{ github.event.inputs.DEVICE_NAME }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
